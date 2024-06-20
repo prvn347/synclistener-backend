@@ -12,3 +12,40 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+
+model Room {
+id Int @id @unique @default(autoincrement())
+title String
+users Int
+server String
+key String @unique 
+maxUsers Int
+isValidKey Boolean
+decryptkey String
+Player Player?
+timestamp DateTime
+}
+model Player {
+
+  id Int @id @unique  @default(autoincrement())
+  provider Provider
+  url String
+  synced Boolean
+  status Status
+  roomId Int @unique
+  Room Room @relation(fields: [roomId],references: [id])
+  timestamp DateTime
+
+
+
+
+}
+enum Provider{
+  SPOTIFY
+  YOUTUBE
+}
+enum Status{
+  PLAY 
+  PAUSE
+}
