@@ -1,10 +1,16 @@
 import z, { ZodError, nullable, number, optional } from "zod";
-import { userSignupInputType, userTypeSchema } from "../types/userType";
+import {
+  userSigninInputType,
+  userSigninSchema,
+  userSignupInputType,
+  userSignupSchema,
+} from "../types/userType";
 
 export class userInputParserVarifier {
   static validateUserSignupInput(userDate: userSignupInputType) {
     try {
-      userTypeSchema.parse(userDate);
+      const check = userSignupSchema.parse(userDate);
+      return check;
     } catch (error) {
       if (error instanceof ZodError) {
         console.error("Validation error for user input:", error.errors);
@@ -14,9 +20,9 @@ export class userInputParserVarifier {
       throw error;
     }
   }
-  static validateUserSigninInput(input: userSignupInputType): void {
+  static validateUserSigninInput(input: userSigninInputType) {
     try {
-      userTypeSchema.parse(input);
+      userSigninSchema.parse(input);
     } catch (error) {
       if (error instanceof ZodError) {
         console.error("Validation error for user input:", error.errors);

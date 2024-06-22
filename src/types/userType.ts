@@ -10,9 +10,14 @@ export interface userSigninInputType {
   password: string;
 }
 
-export const userTypeSchema = z.object({
+export const userSignupSchema = z.object({
   username: z.string(),
   name: z.string(),
   password: z.string(number().min(8)),
   email: z.string().email(),
+});
+
+export const userSigninSchema = z.object({
+  email: z.string().email(),
+  password: z.string(number().min(8)),
 });
