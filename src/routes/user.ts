@@ -39,10 +39,7 @@ router.post("/signin", async (req: Request, res: Response) => {
         return res.status(403).json({ error: "Error new while finding user" });
       }
       const { user, token } = result as any;
-      if (!user.verified) {
-        // Redirect the user to the email verification page
-        return res.status(200).json({ user });
-      }
+
       res.cookie("token", token, cookieConfig);
       return res.status(201).json({ user });
     } else {

@@ -30,11 +30,9 @@ model Room {
   owner      User     @relation(fields: [ownerId], references: [id], name: "OwnedRooms")
   users      User[]   @relation("RoomUsers")
   messages   Message[]
-  server     String
-  roomKey        String   @unique
+  roomKey    String   @unique
   maxUsers   Int
-  isValidKey Boolean
-  decryptkey String
+  isValidKey Boolean @default(false)
   tracks     Track[]
   createdAt  DateTime @default(now())
 }
