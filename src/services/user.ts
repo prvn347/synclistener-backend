@@ -1,6 +1,6 @@
 import { userSignupInputType } from "../types/userType";
 
-import { PrismaClient } from "@prisma/client/edge";
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 export class userService {
   async createUser(userData: userSignupInputType) {
@@ -13,7 +13,7 @@ export class userService {
           password: userData.password,
         },
       });
-
+      console.log(user);
       return user;
     } catch (error) {
       return new Error("error while db user creation");
