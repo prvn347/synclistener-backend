@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,39 +10,65 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  email      String   @unique
+  password   String
+  name       String
+  createdAt  DateTime @default(now())
+  rooms      Room[]   @relation("RoomUsers")
+  messages   Message[]
+  addedTracks Track[] @relation("UserAddedTracks")
+  ownedRooms Room[]   @relation("OwnedRooms")
+}
 
 model Room {
-id Int @id @unique @default(autoincrement())
-title String
-users Int
-server String
-key String @unique 
-maxUsers Int
-isValidKey Boolean
-decryptkey String
-Player Player?
-timestamp DateTime
+  id         Int      @id @default(autoincrement())
+  title      String
+  ownerId    Int
+  owner      User     @relation(fields: [ownerId], references: [id], name: "OwnedRooms")
+  users      User[]   @relation("RoomUsers")
+  messages   Message[]
+  server     String
+  roomKey        String   @unique
+  maxUsers   Int
+  isValidKey Boolean
+  decryptkey String
+  tracks     Track[]
+  createdAt  DateTime @default(now())
 }
-model Player {
 
-  id Int @id @unique  @default(autoincrement())
-  provider Provider
-  url String
-  synced Boolean
-  status Status
-  roomId Int @unique
-  Room Room @relation(fields: [roomId],references: [id])
-  timestamp DateTime
-
-
-
-
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  roomId    Int
+  room      Room     @relation(fields: [roomId], references: [id])
+  createdAt DateTime @default(now())
 }
-enum Provider{
+
+model Track {
+  id        Int      @id @default(autoincrement())
+  provider  Provider
+  title     String
+  url       String
+  synced    Boolean
+  status    Status
+  roomId    Int
+  addedById Int
+  addedBy   User     @relation(fields: [addedById], references: [id], name: "UserAddedTracks")
+  room      Room     @relation(fields: [roomId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+enum Provider {
   SPOTIFY
   YOUTUBE
 }
-enum Status{
-  PLAY 
+
+enum Status {
+  PLAY
   PAUSE
 }
