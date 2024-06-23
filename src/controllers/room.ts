@@ -1,5 +1,5 @@
 import { roomService } from "../services/room";
-import { roomType } from "../types/roomType";
+import { keyType, roomType } from "../types/roomType";
 import { roomInputParserVarifier } from "../utils/roomInputParserVarifier";
 
 export class roomController {
@@ -11,6 +11,14 @@ export class roomController {
       return await this.roomservice.createRoom(roomData, ownerId);
     } catch (error) {
       return new Error("error while creating room.");
+    }
+  }
+
+  async findRoom(inputKey: keyType) {
+    try {
+      return await this.roomservice.findRoom(inputKey);
+    } catch (error) {
+      return new Error("error while validating key");
     }
   }
 }
