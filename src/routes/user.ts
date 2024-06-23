@@ -12,9 +12,10 @@ router.post("/signup", async (req: Request, res: Response) => {
   try {
     const result = (await userControllers.createUser(req.body)) as unknown as {
       user: any;
+      token: any;
     };
-    const token = jwt.sign(req.body.email, process.env.JWT_SECRET || "secret");
-    res.cookie("token", token, cookieConfig);
+
+    res.cookie("token", result.token, cookieConfig);
 
     if (result instanceof Error) {
       return res.status(403).json({ error: "Error while  creating new user" });

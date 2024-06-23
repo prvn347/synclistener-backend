@@ -16,8 +16,10 @@ export class userService {
         },
       });
 
+      const token = generateToken(user.id);
+
       console.log(user);
-      return user;
+      return { user, token };
     } catch (error) {
       return new Error("error while db user creation");
     }

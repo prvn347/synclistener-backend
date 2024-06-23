@@ -1,11 +1,16 @@
 import { Router, Request, Response } from "express";
 import { roomController } from "../controllers/room";
+import { AuthRequest, admin } from "../middleware/admin";
 const router = Router();
 
 const roomControllers = new roomController();
-router.post("/create", async (req: Request, res: Response) => {
+router.use(admin);
+router.post("/create", async (req: AuthRequest, res: Response) => {
   try {
-    const result = await roomControllers.createRoom(req.body);
+    const ownerId = req.user;
+    console.log(ownerId);
+
+    const result = await roomControllers.createRoom(req.body, ownerId);
     if (result instanceof Error) {
       return res.status(403).json({ error: "error while creating room" });
     }

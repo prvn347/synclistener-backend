@@ -5,10 +5,10 @@ import { roomInputParserVarifier } from "../utils/roomInputParserVarifier";
 export class roomController {
   roomservice = new roomService();
   roomInputParserVarifier = new roomInputParserVarifier();
-  async createRoom(roomData: roomType) {
+  async createRoom(roomData: roomType, ownerId: number) {
     try {
       roomInputParserVarifier.roomInputValidation(roomData);
-      return await this.roomservice.createRoom(roomData);
+      return await this.roomservice.createRoom(roomData, ownerId);
     } catch (error) {
       return new Error("error while creating room.");
     }

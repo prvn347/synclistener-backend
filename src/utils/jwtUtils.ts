@@ -1,8 +1,8 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-export function generateToken(userEmail: string) {
+export function generateToken(input: any) {
   try {
-    const token = jwt.sign(userEmail, process.env.JWT_SECRET || "pravin");
+    const token = jwt.sign(input, process.env.JWT_SECRET || "pravin");
     return token;
   } catch (error) {
     throw new Error("error while generating token");
