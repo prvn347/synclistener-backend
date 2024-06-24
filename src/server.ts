@@ -5,7 +5,7 @@ import { initialiseRoutes } from "./routes";
 const app = express();
 dotenv.config();
 
-const port = 3000;
+const port = 3001;
 async function startServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));

@@ -25,7 +25,7 @@ router.post("/create", async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.post("/find", async (req: Request, res: Response) => {
+router.post("/join", async (req: Request, res: Response) => {
   try {
     const result = await roomControllers.findRoom(req.body);
     if (result instanceof Error) {
