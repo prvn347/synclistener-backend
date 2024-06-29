@@ -25,8 +25,8 @@ router.get("/search", async (req: Request, res: Response) => {
         },
       }
     );
-
-    res.json(response);
+    
+    res.json(response.data);
   } catch (error) {
     console.error(error); // Log the error for debugging
     res.status(500).json({ error: "Failed to fetch data from YouTube API" });
