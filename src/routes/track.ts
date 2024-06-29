@@ -13,7 +13,7 @@ router.get("/search", async (req: Request, res: Response) => {
     if (!query) {
       return res.status(400).json({ error: "Query parameter is required" });
     }
-    console.log("YouTube API Key:", process.env.YOUTUBE_API_KEY);
+
     const response = await axios.get(
       "https://www.googleapis.com/youtube/v3/search",
       {
@@ -25,8 +25,8 @@ router.get("/search", async (req: Request, res: Response) => {
         },
       }
     );
-    
-    res.json(response.data);
+
+    res.status(200).json(response.data);
   } catch (error) {
     console.error(error); // Log the error for debugging
     res.status(500).json({ error: "Failed to fetch data from YouTube API" });
