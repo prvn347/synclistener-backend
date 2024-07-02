@@ -12,12 +12,23 @@ async function startServer() {
   app.use(express.json());
 
   app.use(express.urlencoded({ extended: false }));
+
   app.use(
     cors({
       credentials: true,
       origin: true,
-      allowedHeaders: ["Content-Type", "Authorization"],
-      preflightContinue: true,
+      allowedHeaders: ["Content-Type", "Authorization", "Cookies"],
+
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    })
+  );
+  app.options(
+    "*",
+    cors({
+      credentials: true,
+      origin: true,
+      allowedHeaders: ["Content-Type", "Authorization", "Cookies"],
+
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     })
   );

@@ -16,6 +16,7 @@ export function admin(req: AuthRequest, res: Response, next: NextFunction) {
 
   const parsedCookies = cookie.parse(cookies);
   const token = parsedCookies.token;
+  console.log(token);
 
   if (!token) {
     return res.status(401).json({ error: "Unauthorized" });
