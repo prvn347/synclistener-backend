@@ -14,9 +14,16 @@ export class roomController {
     }
   }
 
-  async findRoom(inputKey: keyType) {
+  async findRoom(inputKey: keyType, userId: number) {
     try {
-      return await this.roomservice.findRoom(inputKey);
+      return await this.roomservice.findRoom(inputKey, userId);
+    } catch (error) {
+      return new Error("error while validating key");
+    }
+  }
+  async getDetails(inputKey: string) {
+    try {
+      return await this.roomservice.getDetails(inputKey);
     } catch (error) {
       return new Error("error while validating key");
     }
