@@ -53,6 +53,7 @@ export class userService {
   }
   async getUser(userId: number) {
     try {
+      console.log(userId + "here");
       const user = await prisma.user.findFirst({
         where: {
           id: userId,
@@ -62,6 +63,7 @@ export class userService {
           ownedRooms: true,
         },
       });
+      console.log(user);
 
       return user;
     } catch (error) {

@@ -26,6 +26,7 @@ export class userController {
   }
   async getUser(userId: number) {
     try {
+      console.log("i am at controller");
       return await this.userService.getUser(userId);
     } catch (error) {
       return new Error("error while getting user.");
