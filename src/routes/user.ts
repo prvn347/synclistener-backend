@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { cookieConfig } from "../config";
 import { userSignupInputType } from "../types/userType";
 import { verifyToken } from "../utils/jwtUtils";
+import { AuthRequest, admin } from "../middleware/admin";
 const router = Router();
 
 const userControllers = new userController();
@@ -50,6 +51,21 @@ router.post("/signin", async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.error("Error in /signin route:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/protected", admin, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user;
+    console.log(userId);
+    const result = await userControllers.getUser(parseInt(userId));
+    if (result instanceof Error) {
+      return res.status(403).json({ error: "Error new while finding user" });
+    }
+    return res.status(200).json({ user: result });
+  } catch (error) {
+    console.error("Error in /protented route:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });

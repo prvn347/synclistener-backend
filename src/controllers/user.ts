@@ -24,4 +24,11 @@ export class userController {
       return new Error("error while creating user.");
     }
   }
+  async getUser(userId: number) {
+    try {
+      return await this.userService.getUser(userId);
+    } catch (error) {
+      return new Error("error while getting user.");
+    }
+  }
 }

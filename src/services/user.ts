@@ -51,4 +51,21 @@ export class userService {
       throw new Error("error while finding user");
     }
   }
+  async getUser(userId: number) {
+    try {
+      const user = await prisma.user.findFirst({
+        where: {
+          id: userId,
+        },
+        select: {
+          name: true,
+          ownedRooms: true,
+        },
+      });
+
+      return user;
+    } catch (error) {
+      throw new Error("unautherized user");
+    }
+  }
 }
