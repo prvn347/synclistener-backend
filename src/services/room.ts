@@ -6,14 +6,14 @@ const prisma = new PrismaClient();
 export class roomService {
   async createRoom(roomData: roomType, ownerId: number) {
     console.log(Math.random());
-    const roomKey = bcrypt.hashSync(Math.random().toString(), 10).slice(10, 16);
-    console.log(ownerId, roomData, roomKey, typeof roomKey);
+
+    console.log(ownerId, roomData);
     try {
       const room = await prisma.room.create({
         data: {
           title: roomData.title,
           maxUsers: roomData.maxUsers,
-          roomKey,
+          roomKey: roomData.roomKey,
           ownerId: ownerId,
         },
       });

@@ -44,7 +44,7 @@ export class userService {
       }
       if (isValidPassword) {
         console.log(user);
-        const token = generateToken(userData.email);
+        const token = generateToken(user.id);
         return { user, token };
       }
     } catch (error) {
