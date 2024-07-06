@@ -1,15 +1,20 @@
 import express from "express";
-import { Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
 import { initialiseRoutes } from "./routes";
 import cors from "cors";
 import { WebSocketServer, WebSocket } from "ws";
 import bcrypt from "bcryptjs";
 const app = express();
+const prisma = new PrismaClient();
 
 dotenv.config();
 
 const port = 3001;
+interface Room {
+  [key: string]: WebSocket[]; // Explicitly allow undefined for uninitialized rooms
+}
+
 async function startServer() {
   app.use(express.json());
 
@@ -41,10 +46,13 @@ async function startServer() {
   });
   const wss = new WebSocketServer({ server: server });
   const maxClients = 4;
-  interface Room {
-    [key: string]: WebSocket[];
-  }
+  const existingRooms = await prisma.room.findMany({});
   let rooms: Room = {};
+  existingRooms.forEach((room) => {
+    rooms[room.roomKey] = []; // Initialize empty array for existing rooms
+  });
+  console.log("loadded ropom" + JSON.stringify(rooms));
+
   wss.on(
     "connection",
     function connection(ws: WebSocket, request: any, client: any) {
@@ -69,63 +77,81 @@ async function startServer() {
             case "play":
             case "pause":
             case "seek":
+            case "videoId":
               broadcastToRoom(ws, data);
               break;
-
             default:
               console.warn(`Unknown message type: ${type}`);
           }
-        } catch (error) {}
-        ///here you will write you logic for application it could be sending to server sendin data form server and room server etc.
-        // wss.clients.forEach(function each(client) {
-        //   if (client !== ws && client.readyState === WebSocket.OPEN) {
-        //     client.send(data, { binary: isbinery });
-        //   }
-        // });
+        } catch (error) {
+          console.error(error);
+        }
       });
+
       ws.on("close", () => {
         leaveRoom(ws);
       });
     }
   );
-  function createRoom(
+
+  async function createRoom(
     ws: WebSocket,
-    params: {
-      title: string;
-      roomKey: string;
-      maxUsers: number;
-    }
-  ): void {
-    const room: any = params.roomKey;
-    rooms[room] = [ws];
-    (ws as any).room = room;
-    sendMessage(ws, {
-      type: "info",
-      params: { room, clients: rooms[room].length },
+    params: { title: string; roomKey: string; maxUsers: number }
+  ) {
+    const roomKey = params.roomKey;
+
+    // Check for existing room before creating a new one
+    const existingRoom = await prisma.room.findUnique({
+      where: { roomKey },
     });
+
+    if (existingRoom) {
+      console.warn(`Room with key ${roomKey} already exists`);
+      sendMessage(ws, {
+        type: "error",
+        params: { message: "Room already exists" },
+      });
+      return;
+    } // Normalize room key
+    try {
+      // Create a new room in the database using Prisma
+
+      rooms[roomKey] = [ws]; // Add the connecting user to the room
+      (ws as any).room = roomKey;
+      console.log(`Room created: ${roomKey}`);
+      sendMessage(ws, {
+        type: "info",
+        params: { room: roomKey, clients: rooms[roomKey].length },
+      });
+    } catch (error) {
+      console.error("Error creating room:", error);
+    }
   }
 
-  function joinRoom(ws: WebSocket, params: { code: string }): void {
-    const room = params.code;
-    if (!rooms[room]) {
-      console.warn(`Room ${room} does not exist`);
+  function joinRoom(ws: WebSocket, params: { code: string }) {
+    console.log("jonig room" + JSON.stringify(rooms));
+
+    const roomCode = params.code; // Normalize room code
+    console.log(`Attempting to join room with code: ${roomCode}`);
+    if (!rooms[roomCode]) {
+      console.warn(`Room ${roomCode} does not exist`);
       return;
     }
 
-    if (rooms[room].length >= maxClients) {
-      console.warn(`Room ${room} is full`);
+    if (rooms[roomCode].length >= maxClients) {
+      console.warn(`Room ${roomCode} is full`);
       return;
     }
 
-    rooms[room].push(ws);
-    (ws as any).room = room;
+    rooms[roomCode].push(ws);
+    (ws as any).room = roomCode;
     sendMessage(ws, {
       type: "info",
-      params: { room, clients: rooms[room].length },
+      params: { room: roomCode, clients: rooms[roomCode].length },
     });
   }
 
-  function leaveRoom(ws: WebSocket): void {
+  function leaveRoom(ws: WebSocket) {
     const room = (ws as any).room;
     if (!room) return;
 
@@ -136,8 +162,10 @@ async function startServer() {
       delete rooms[room];
     }
   }
-  function broadcastToRoom(sender: WebSocket, message: any): void {
+
+  function broadcastToRoom(sender: WebSocket, message: any) {
     const room = (sender as any).room;
+    console.log(`Broadcasting to room: ${room}`);
     if (!room || !rooms[room]) return;
 
     rooms[room].forEach((client) => {
@@ -146,17 +174,10 @@ async function startServer() {
       }
     });
   }
+
   function sendMessage(ws: WebSocket, message: any) {
     ws.send(JSON.stringify(message));
   }
-
-  // function generateRoomCode(length: number) {
-  //   let result = "";
-
-  //   result = bcrypt.hashSync(Math.random().toString(), 10).slice(10, 20);
-
-  //   return result;
-  // }
 }
 
 startServer();

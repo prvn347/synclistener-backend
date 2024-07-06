@@ -18,7 +18,6 @@ export class userService {
 
       const token = generateToken(user.id);
 
-      console.log(user);
       return { user, token };
     } catch (error) {
       return new Error("error while db user creation");
@@ -26,7 +25,6 @@ export class userService {
   }
   async findUser(userData: userSigninInputType) {
     try {
-      console.log(userData);
       const user = await prisma.user.findFirst({
         where: {
           email: userData.email,
@@ -43,7 +41,6 @@ export class userService {
         throw new Error("wrong password");
       }
       if (isValidPassword) {
-        console.log(user);
         const token = generateToken(user.id);
         return { user, token };
       }
@@ -53,7 +50,6 @@ export class userService {
   }
   async getUser(userId: number) {
     try {
-      console.log(userId + "here");
       const user = await prisma.user.findFirst({
         where: {
           id: userId,
@@ -63,7 +59,6 @@ export class userService {
           ownedRooms: true,
         },
       });
-      console.log(user);
 
       return user;
     } catch (error) {

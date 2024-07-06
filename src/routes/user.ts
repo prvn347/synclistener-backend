@@ -34,7 +34,7 @@ router.post("/signin", async (req: Request, res: Response) => {
   try {
     // Parse cookies from the request header
     const cookies = req.headers.cookie;
-    console.log(cookies);
+
     if (!cookies || !cookies.includes("token=")) {
       const result = await userControllers.findUser(req.body);
       if (result instanceof Error) {
@@ -58,7 +58,7 @@ router.post("/signin", async (req: Request, res: Response) => {
 router.get("/protected", admin, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user;
-    console.log(userId);
+
     const result = await userControllers.getUser(parseInt(userId));
     if (result instanceof Error) {
       return res.status(403).json({ error: "Error new while finding user" });

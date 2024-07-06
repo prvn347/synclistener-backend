@@ -17,7 +17,6 @@ export class userController {
 
   async findUser(userData: userSigninInputType) {
     try {
-      console.log(userData);
       userInputParserVarifier.validateUserSigninInput(userData);
       return await this.userService.findUser(userData);
     } catch (error) {
@@ -26,7 +25,6 @@ export class userController {
   }
   async getUser(userId: number) {
     try {
-      console.log("i am at controller");
       return await this.userService.getUser(userId);
     } catch (error) {
       return new Error("error while getting user.");

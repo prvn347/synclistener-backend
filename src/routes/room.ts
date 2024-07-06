@@ -8,7 +8,6 @@ router.use(admin);
 router.post("/create", async (req: AuthRequest, res: Response) => {
   try {
     const ownerId = req.user;
-    console.log(ownerId);
 
     const result = await roomControllers.createRoom(
       req.body,

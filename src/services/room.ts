@@ -5,9 +5,6 @@ const prisma = new PrismaClient();
 
 export class roomService {
   async createRoom(roomData: roomType, ownerId: number) {
-    console.log(Math.random());
-
-    console.log(ownerId, roomData);
     try {
       const room = await prisma.room.create({
         data: {
@@ -17,8 +14,6 @@ export class roomService {
           ownerId: ownerId,
         },
       });
-      console.log("genrated");
-      console.log(room);
 
       return room;
     } catch (error) {
@@ -29,7 +24,6 @@ export class roomService {
 
   async findRoom(input: keyType, userId: number) {
     try {
-      console.log(input);
       const room = await prisma.room.findUnique({
         where: {
           roomKey: input.roomKey,
@@ -47,7 +41,7 @@ export class roomService {
           },
         },
       });
-      console.log(room);
+
       return room;
     } catch (error) {
       console.error("Error while finding room:", error);
