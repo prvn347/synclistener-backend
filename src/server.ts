@@ -49,8 +49,12 @@ async function startServer() {
   const users: {
     [key: string]: {
       room: string;
+      name: string;
       ws: any;
     };
+  } = {};
+  const rooms: {
+    [key: string]: string[];
   } = {};
 
   // console.log("loadded ropom" + JSON.stringify(rooms));
@@ -105,6 +109,8 @@ async function startServer() {
         "and he/she is in room key " +
         params.code
     );
+    console.log(`User ${params.name} (ID: ${wsId}) joined room ${params.code}`);
+
     try {
       // if (!users[wsId].room) {
       //   console.warn(`Room ${params.code} does not exist`);
@@ -115,10 +121,19 @@ async function startServer() {
       //   console.warn(`Room ${params.code} is full`);
       //   return;
       // }
-      const message = { type: "joined", name: params.name };
+      if (!rooms[params.code]) {
+        rooms[params.code] = [];
+      }
+      rooms[params.code].push(params.name);
       users[wsId] = {
         room: params.code,
+        name: params.name,
         ws,
+      };
+      console.log(rooms[params.code]);
+      const message = {
+        type: "userList",
+        users: rooms[params.code],
       };
       broadcastToRoom(ws, message, wsId);
       //todo send message that someones join maybe sent name lol add it in db or persist maybe
@@ -127,11 +142,25 @@ async function startServer() {
     }
   }
   function leaveRoom(wsId: number, ws: WebSocket) {
-    ws.on("close", () => {
-      console.log("User " + wsId + " disconnected");
-      // Remove user from the users object based on wsId
+    const user = users[wsId];
+    if (user) {
+      const { room, name } = user;
+      console.log(`User ${name} (ID: ${wsId}) left room ${room}`);
+
+      // Remove user from room
+      rooms[room] = rooms[room].filter((userName) => userName !== name);
+
+      // Broadcast updated user list
+      const message = {
+        type: "userList",
+        users: rooms[room],
+      };
+
+      broadcastToRoom(user.ws, message, wsId);
+
+      // Remove user from users object
       delete users[wsId];
-    });
+    }
   }
   function broadcastToRoom(sender: WebSocket, message: any, wsId: number) {
     try {
