@@ -93,7 +93,11 @@ async function startServer() {
     }
   );
 
-  function joinRoom(ws: WebSocket, params: { code: string }, wsId: number) {
+  function joinRoom(
+    ws: WebSocket,
+    params: { code: string; name: string },
+    wsId: number
+  ) {
     console.log(
       "someone joining " +
         wsId +
@@ -111,11 +115,12 @@ async function startServer() {
       //   console.warn(`Room ${params.code} is full`);
       //   return;
       // }
-
+      const message = { type: "joined", name: params.name };
       users[wsId] = {
         room: params.code,
         ws,
       };
+      broadcastToRoom(ws, message, wsId);
       //todo send message that someones join maybe sent name lol add it in db or persist maybe
     } catch (error) {
       console.error(error);

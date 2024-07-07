@@ -5,12 +5,14 @@ const prisma = new PrismaClient();
 
 export class roomService {
   async createRoom(roomData: roomType, ownerId: number) {
+    const key = bcrypt.hashSync(Math.random().toString(), 10).slice(10, 20);
+
     try {
       const room = await prisma.room.create({
         data: {
           title: roomData.title,
           maxUsers: roomData.maxUsers,
-          roomKey: roomData.roomKey,
+          roomKey: key,
           ownerId: ownerId,
         },
       });

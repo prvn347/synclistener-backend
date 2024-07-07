@@ -1,7 +1,7 @@
 import z from "zod";
 export type roomType = {
   title: string;
-  roomKey: string;
+
   maxUsers: number;
 };
 
