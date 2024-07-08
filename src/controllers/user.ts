@@ -14,6 +14,14 @@ export class userController {
       return new Error("error while creating user.");
     }
   }
+  async waitlist(email: { email: string }) {
+    try {
+      userInputParserVarifier.validateUserWaitlist(email);
+      return await this.userService.waitlist(email);
+    } catch (error) {
+      return new Error("error while waitlisting  user.");
+    }
+  }
 
   async findUser(userData: userSigninInputType) {
     try {

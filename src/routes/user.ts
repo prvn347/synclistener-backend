@@ -69,4 +69,16 @@ router.get("/protected", admin, async (req: AuthRequest, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+router.post("/waitlist", async (req: Request, res: Response) => {
+  try {
+    const result = await userControllers.waitlist(req.body);
+    if (result instanceof Error) {
+      return res.status(403).json({ error: "Error new while finding user" });
+    }
+    return res.status(200).json({ user: result });
+  } catch (error) {
+    console.error("Error in /protented route:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 export default router;

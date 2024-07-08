@@ -48,6 +48,20 @@ export class userService {
       throw new Error("error while finding user");
     }
   }
+  async waitlist(email: { email: string }) {
+    try {
+      const room = await prisma.waitlist.create({
+        data: {
+          email: email.email,
+        },
+      });
+      console.log(room);
+      return room;
+    } catch (error) {
+      console.error("Error while creating room:", error);
+      throw new Error("error while creating room");
+    }
+  }
   async getUser(userId: number) {
     try {
       const user = await prisma.user.findFirst({

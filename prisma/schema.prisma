@@ -70,3 +70,9 @@ enum Status {
   PLAY
   PAUSE
 }
+model Waitlist{
+  id Int @id @default(autoincrement())
+
+  email String
+  
+}

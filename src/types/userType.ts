@@ -16,7 +16,9 @@ export const userSignupSchema = z.object({
   password: z.string(number().min(8)),
   email: z.string().email(),
 });
-
+export const waitlistSchema = z.object({
+  email: z.string().email(),
+});
 export const userSigninSchema = z.object({
   email: z.string().email(),
   password: z.string(number().min(8)),

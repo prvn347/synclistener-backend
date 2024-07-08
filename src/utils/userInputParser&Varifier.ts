@@ -4,12 +4,26 @@ import {
   userSigninSchema,
   userSignupInputType,
   userSignupSchema,
+  waitlistSchema,
 } from "../types/userType";
 
 export class userInputParserVarifier {
   static validateUserSignupInput(userDate: userSignupInputType) {
     try {
       const check = userSignupSchema.parse(userDate);
+      return check;
+    } catch (error) {
+      if (error instanceof ZodError) {
+        console.error("Validation error for user input:", error.errors);
+      } else {
+        console.error("Unexpected error while validating user input:", error);
+      }
+      throw error;
+    }
+  }
+  static validateUserWaitlist(email: { email: string }) {
+    try {
+      const check = waitlistSchema.parse(email);
       return check;
     } catch (error) {
       if (error instanceof ZodError) {
