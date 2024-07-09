@@ -38,4 +38,11 @@ export class userController {
       return new Error("error while getting user.");
     }
   }
+  async getUserRooms(ownerId: number) {
+    try {
+      return await this.userService.getUserRooms(ownerId);
+    } catch (error) {
+      return new Error("error while getting user rooms.");
+    }
+  }
 }

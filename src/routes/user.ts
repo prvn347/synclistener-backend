@@ -5,6 +5,7 @@ import { cookieConfig } from "../config";
 import { userSignupInputType } from "../types/userType";
 import { verifyToken } from "../utils/jwtUtils";
 import { AuthRequest, admin } from "../middleware/admin";
+
 const router = Router();
 
 const userControllers = new userController();
@@ -58,6 +59,7 @@ router.post("/signin", async (req: Request, res: Response) => {
 router.get("/protected", admin, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user;
+    console.log(userId);
 
     const result = await userControllers.getUser(parseInt(userId));
     if (result instanceof Error) {
@@ -68,6 +70,16 @@ router.get("/protected", admin, async (req: AuthRequest, res: Response) => {
     console.error("Error in /protented route:", error);
     res.status(500).json({ error: "Internal server error" });
   }
+});
+router.get("/rooms", admin, async (req: AuthRequest, res: Response) => {
+  try {
+    const ownerId = req.user;
+    const result = await userControllers.getUserRooms(parseInt(ownerId));
+    if (result instanceof Error) {
+      return res.status(403).json({ error: "Error new while finding user" });
+    }
+    return res.status(200).json({ rooms: result });
+  } catch (error) {}
 });
 router.post("/waitlist", async (req: Request, res: Response) => {
   try {
@@ -81,4 +93,5 @@ router.post("/waitlist", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 export default router;

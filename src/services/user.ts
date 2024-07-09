@@ -62,6 +62,22 @@ export class userService {
       throw new Error("error while creating room");
     }
   }
+  async getUserRooms(ownerId: number) {
+    try {
+      console.log("reached service");
+      console.log(ownerId);
+      const userRooms = await prisma.room.findMany({
+        where: {
+          ownerId: ownerId,
+        },
+      });
+      console.log(userRooms);
+      return userRooms;
+    } catch (error) {
+      console.error("Error while creating room:", error);
+      throw new Error("error while creating room");
+    }
+  }
   async getUser(userId: number) {
     try {
       const user = await prisma.user.findFirst({
