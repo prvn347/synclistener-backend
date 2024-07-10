@@ -156,13 +156,18 @@ async function startServer() {
         users: rooms[room],
       };
 
-      broadcastToRoom(user.ws, message, wsId);
+      broadcastToRoom(user.ws, message, wsId, true);
 
       // Remove user from users object
       delete users[wsId];
     }
   }
-  function broadcastToRoom(sender: WebSocket, message: any, wsId: number) {
+  function broadcastToRoom(
+    sender: WebSocket,
+    message: any,
+    wsId: number,
+    includeSender = false
+  ) {
     try {
       const roomId = users[wsId].room;
       console.log(`Broadcasting to room: ${roomId}`);
@@ -176,7 +181,10 @@ async function startServer() {
       );
       if (!users || !users[wsId]) return;
       Object.keys(users).forEach((wsId) => {
-        if (users[wsId].room === roomId) {
+        if (
+          users[wsId].room === roomId &&
+          (includeSender || users[wsId].ws !== sender)
+        ) {
           users[wsId].ws.send(JSON.stringify(message));
         }
       });
