@@ -93,5 +93,13 @@ router.post("/waitlist", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
+router.get("/logout", async (req: Request, res: Response) => {
+  try {
+    res.clearCookie("token", cookieConfig);
+    return res.status(200).json({ message: "User logged out successfully" });
+  } catch (error) {
+    console.error("Error in /logout route:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 export default router;
