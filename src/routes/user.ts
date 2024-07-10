@@ -95,7 +95,7 @@ router.post("/waitlist", async (req: Request, res: Response) => {
 });
 router.get("/logout", async (req: Request, res: Response) => {
   try {
-    res.clearCookie("token", cookieConfig);
+    res.clearCookie("token", { ...cookieConfig, maxAge: 0 });
     return res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
     console.error("Error in /logout route:", error);
