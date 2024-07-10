@@ -1,18 +1,20 @@
-import bcrypt from "bcryptjs";
 import { keyType, roomType } from "../types/roomType";
+import { generateSecureKey } from "../config/generateKey";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 export class roomService {
   async createRoom(roomData: roomType, ownerId: number) {
-    const key = bcrypt.hashSync(Math.random().toString(), 10).slice(10, 20);
-
+    const key = bcrypt.hashSync(generateSecureKey(), 10);
+    const slicedKey = Buffer.from(key, "utf8").toString("base64").slice(10, 20);
+    console.log(slicedKey);
     try {
       const room = await prisma.room.create({
         data: {
           title: roomData.title,
           maxUsers: roomData.maxUsers,
-          roomKey: key,
+          roomKey: slicedKey,
           ownerId: ownerId,
         },
       });
