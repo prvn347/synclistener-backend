@@ -77,6 +77,9 @@ async function startServer() {
             case "leave":
               leaveRoom(wsId, ws);
               break;
+            case "message":
+              broadcastToRoom(ws, data, wsId, true);
+              break;
             case "play":
             case "pause":
             case "seek":
@@ -135,7 +138,7 @@ async function startServer() {
         type: "userList",
         users: rooms[params.code],
       };
-      broadcastToRoom(ws, message, wsId);
+      broadcastToRoom(ws, message, wsId, true);
       //todo send message that someones join maybe sent name lol add it in db or persist maybe
     } catch (error) {
       console.error(error);
