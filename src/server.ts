@@ -138,7 +138,9 @@ async function startServer() {
         type: "userList",
         users: rooms[params.code],
       };
+
       broadcastToRoom(ws, message, wsId, true);
+
       //todo send message that someones join maybe sent name lol add it in db or persist maybe
     } catch (error) {
       console.error(error);
