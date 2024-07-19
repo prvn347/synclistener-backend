@@ -54,7 +54,7 @@ async function startServer() {
     };
   } = {};
   const rooms: {
-    [key: string]: string[];
+    [key: string]: { users: string[]; host: string };
   } = {};
 
   // console.log("loadded ropom" + JSON.stringify(rooms));
@@ -85,6 +85,9 @@ async function startServer() {
             case "seek":
             case "videoId":
               broadcastToRoom(ws, data, wsId);
+              break;
+            case "transferHost":
+              transferHost(wsId, params.newHostName);
               break;
             default:
               console.warn(`Unknown message type: ${type}`);
@@ -125,9 +128,9 @@ async function startServer() {
       //   return;
       // }
       if (!rooms[params.code]) {
-        rooms[params.code] = [];
+        rooms[params.code] = { users: [], host: params.name };
       }
-      rooms[params.code].push(params.name);
+      rooms[params.code].users.push(params.name);
       users[wsId] = {
         room: params.code,
         name: params.name,
@@ -136,7 +139,8 @@ async function startServer() {
       console.log(rooms[params.code]);
       const message = {
         type: "userList",
-        users: rooms[params.code],
+        users: rooms[params.code].users,
+        host: rooms[params.code].host,
       };
 
       broadcastToRoom(ws, message, wsId, true);
@@ -153,18 +157,36 @@ async function startServer() {
       console.log(`User ${name} (ID: ${wsId}) left room ${room}`);
 
       // Remove user from room
-      rooms[room] = rooms[room].filter((userName) => userName !== name);
-
+      rooms[room].users = rooms[room].users.filter(
+        (userName) => userName !== name
+      );
+      if (rooms[room].host === name && rooms[room].users.length > 0) {
+        rooms[room].host = rooms[room].users[0]; // Assign new host if host leaves
+      }
       // Broadcast updated user list
       const message = {
         type: "userList",
-        users: rooms[room],
+        users: rooms[room].users,
+        host: rooms[room].host,
       };
 
       broadcastToRoom(user.ws, message, wsId, true);
 
       // Remove user from users object
       delete users[wsId];
+    }
+  }
+  function transferHost(wsId: number, newHostName: string) {
+    const user = users[wsId];
+    if (user) {
+      const { room } = user;
+      rooms[room].host = newHostName;
+      const message = {
+        type: "userList",
+        users: rooms[room].users,
+        host: rooms[room].host,
+      };
+      broadcastToRoom(user.ws, message, wsId, true);
     }
   }
   function broadcastToRoom(
