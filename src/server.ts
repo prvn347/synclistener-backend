@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { initialiseRoutes } from "./routes";
 import cors from "cors";
 import { WebSocketServer, WebSocket } from "ws";
+import { reloadWebsite } from ".";
 
 const app = express();
 
@@ -14,6 +15,7 @@ const port = 3001;
 // }
 
 async function startServer() {
+  reloadWebsite()
   app.use(express.json());
 
   app.use(express.urlencoded({ extended: false }));
