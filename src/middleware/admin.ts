@@ -9,7 +9,8 @@ export interface AuthRequest extends Request {
 
 export function admin(req: AuthRequest, res: Response, next: NextFunction) {
   const cookies = req.headers.cookie;
-
+  
+ console.log(cookies)
   if (!cookies) {
     return res.status(401).json({ error: "Unauthorized" });
   }
